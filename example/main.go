@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -130,7 +131,13 @@ func setupHandler(www string) http.Handler {
 
 	return mux
 }
+type tfoTCPListener struct {
+	*net.TCPListener
+}
 
+func NewTFOTCPListener(inner net.Listener) net.Listener {
+	return &tfoTCPListener{inner.(*net.TCPListener)}
+}
 func main() {
 	// defer profile.Start().Stop()
 	go func() {
@@ -176,11 +183,17 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(len(bs))
 	for _, b := range bs {
+		logger.Infof(b)
 		bCap := b
 		go func() {
 			var err error
 			if *tcp {
 				certFile, keyFile := testdata.GetCertificatePaths()
+				listener, err := net.Listen("tcp","localhost:6121")
+				if err != nil {
+					log.Fatalf("Failed to listen: %v", err)
+				}
+				listener = NewTFOTCPListener(listener)
 				err = http3.ListenAndServe(bCap, certFile, keyFile, handler)
 			} else {
 				server := http3.Server{

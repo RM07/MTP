@@ -25,6 +25,7 @@ import (
 	"github.com/quic-go/quic-go/internal/utils"
 	"github.com/quic-go/quic-go/logging"
 	"github.com/quic-go/quic-go/qlog"
+    "golang.org/x/sys/unix"
 )
 
 func tfoControl(network, address string, c syscall.RawConn) error {
@@ -110,7 +111,7 @@ func main() {
 			Control: func(network, address string, c syscall.RawConn) error {
 				var err error
 				err = c.Control(func(fd uintptr) {
-					_ = syscall.SetsockoptInt(int(fd), syscall.SOL_TCP, 0x17, 1)
+					_ = syscall.SetsockoptInt(int(fd), unix.SOL_TCP, unix.TCP_FASTOPEN_CONNECT, 1)
 				})
 				return err
 			},
