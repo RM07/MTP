@@ -1,72 +1,3 @@
-// package main
-
-// import (
-// 	"fmt"
-// 	"net"
-// 	"net/http"
-// 	"os"
-// 	"syscall"
-// 	"crypto/tls"
-
-// 	// "github.com/quic-go/quic-go/http3"
-// 	"github.com/quic-go/quic-go/internal/testdata"
-// 	"golang.org/x/sys/unix"
-
-// )
-
-// func main() {
-// 	addr := "127.0.0.1:8080"
-
-// 	// Create a TCP listener
-// 	l, err := net.Listen("tcp", addr)
-// 	if err != nil {
-// 		fmt.Println("Failed to listen:", err)
-// 		os.Exit(1)
-// 	}
-// 	defer l.Close()
-
-// 	// Get the underlying file descriptor of the listener
-// 	fd, err := l.(*net.TCPListener).File()
-// 	if err != nil {
-// 		fmt.Println("Failed to get file descriptor:", err)
-// 		os.Exit(1)
-// 	}
-
-// 	// Set the TCP_FASTOPEN option on the file descriptor
-// 	err = syscall.SetsockoptInt(int(fd.Fd()), unix.SOL_TCP, unix.TCP_FASTOPEN, 1)
-// 	if err != nil {
-// 		fmt.Println("Failed to set TCP_FASTOPEN option:", err)
-// 		os.Exit(1)
-// 	}
-
-// 	fmt.Println("Server listening on", addr)
-
-// 	// Create a new http.Handler using http.DefaultServeMux (or your own custom handler)
-// 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		mux := http.NewServeMux()
-// 		mux.Handle("/", http.FileServer(http.Dir("/home/nithin/Desktop/mtp2")))
-// 	})
-	
-// 	tlsConfig := &tls.Config{
-// 		InsecureSkipVerify: true,
-// 	}
-// 	// Create a http3.Server using the TCP listener
-// 	server := &http.Server{
-// 		// Note: http.Server is embedded in http3.Server
-// 		Handler: handler,
-// 		TLSConfig: tlsConfig,
-// 	}
-
-// 	// Start serving requests using http3.Serve with the TCP listener
-// 	// err = server.Serve(l)
-// 	certFile, keyFile := testdata.GetCertificatePaths()
-// 	err = server.ServeTLS(l,certFile,keyFile)
-// 	if err != nil {
-// 		fmt.Println("Failed to serve:", err)
-// 		os.Exit(1)
-// 	}
-// }
-
 
 // Interface to listen on a TFO enabled TCP socket
 package main
@@ -77,7 +8,7 @@ import (
 	"log"
 	"net"
 	"syscall"
-	"net/http"
+	// "net/http"
 )
 
 type TFOServer struct {
@@ -176,11 +107,11 @@ func (cxn *TFOServerConn) Handle() {
 	// Do nothing in particular with the response, just print it
 	log.Printf("Server Conn: Read %d bytes: %#v", n, string(buf[:n]))
 
-	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(http.Dir("/home/nithin/Desktop/mtp2")))
-	if err := http.Serve(cxn, mux); err != nil {
-		log.Println("Failed to serve files: ", err)
-	}
+	// mux := http.NewServeMux()
+	// mux.Handle("/", http.FileServer(http.Dir("/home/nithin/Desktop/mtp2")))
+	// if err := http.Serve(cxn, mux); err != nil {
+	// 	log.Println("Failed to serve files: ", err)
+	// }
 
 	// The defer will close the connection now
 
