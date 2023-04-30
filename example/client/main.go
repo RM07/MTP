@@ -12,6 +12,7 @@ import (
 	"net"
 	// "time"
 	"io"
+    "io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -163,7 +164,7 @@ func main() {
                 // I will make a TCP connection here so that further data can be fetched from here
                 
                 bytesCopied := int64(body.Len())
-                TCPaddr := "https://127.0.0.1:8080/1.mp4"
+                TCPaddr := "https://127.0.0.1:8080/"
                 //create new HTTP request to fetch remaining bytes
                 req, err := http.NewRequest("GET", TCPaddr, nil)
                 if err != nil {
@@ -176,6 +177,7 @@ func main() {
                 // make HTTP request with new TCP connection
                 // rsp, err := hclient.Do(req)
 				rsp, err := client.Do(req)
+                
 
                 if err != nil {
                     log.Fatal(err)
@@ -184,14 +186,15 @@ func main() {
 				
                 logger.Infof("Got response for %s: %#v", TCPaddr, rsp)
                 
-                buf := &bytes.Buffer{}
+                // buf := &bytes.Buffer{}
                 // read remaining bytes from response body
-                _, err = io.Copy(buf, rsp.Body)
+                // _, err = io.Copy(buf, rsp.Body)
+                videoBytes, err := ioutil.ReadAll(rsp.Body)
                 if err != nil {
                     log.Fatal(err)
                 }
 
-                logger.Infof("response body after TCP %d",buf.Len())
+                logger.Infof("response body after TCP %d",videoBytes[0])
                
                 os.Exit(0)
             }
